@@ -1,39 +1,55 @@
-
 import java.io.*;
 import java.net.*;
 import java.util.*;
+import java.text.MessageFormat;
+
+// ---------------------------------------
+// Server that receives HTTP GET requests.
 
 class UDPServer {
 	public static void main(String args[]) throws Exception {
 
-		// Create socket at port 9090
-		DatagramSocket serverSocket = new DatagramSocket(9090);
+		// -------------------------
+		// Open socket at port 9876.
 
-		// Create byte arrays
-		byte[] dataIn = new byte[256];
+		System.out.println("Opening socket...");
+		DatagramSocket serverSocket = new DatagramSocket(9876);
+		byte[] receiveData = new byte[1024];
 		String nullByte = "\0";
+		System.out.println("DONE\n");
 
-		while (true) {
+		// ------------------------------
+		// Continuously process requests.
 
-			// Get packet sent from client
-			DatagramPacket packetIn = new DatagramPacket(dataIn, dataIn.length);
-			serverSocket.receive(packetIn);
+		while (true)
+		{
+			// ------------------------------
+			// Receive packet sent by client.
 
-			// Get client IP address, port number, and HTTP request
-			InetAddress clientIP = packetIn.getAddress();
-			int clientPort = packetIn.getPort();
-			String clientGetRequest = new String(packetIn.getData());
+			DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
+			serverSocket.receive(receivePacket);
 
-			// Get the name of the file requested by the client
-			String fileName = clientGetRequest.substring(
-					clientGetRequest.indexOf(" ") + 1, clientGetRequest.lastIndexOf(" "));
+			// ------------------------------------------------------
+			// Get clients IP address, port number, and request data.
+
+			InetAddress clientIP = receivePacket.getAddress();
+			int clientPort = receivePacket.getPort();
+			String requestData = new String(receivePacket.getData());
+			System.out.println(MessageFormat.format("Packet received from client at {0}:{1}", clientIP, clientPort));
+
+			// ---------------------------------------
+			// Extract file name and read into buffer.
+
+			String fileName = requestData.split(" ")[1];
+			System.out.println(MessageFormat.format("File requested : {0}\n", fileName));
+
 			BufferedReader fileIn = new BufferedReader(new FileReader(fileName));
 			StringBuilder fileDataContents = new StringBuilder();
 
 			String line = fileIn.readLine();
 			System.out.println("line: " + line);
 			while (line != null) {
-				System.out.println(line);
+				//System.out.println(line);
 				fileDataContents.append(line);
 				line = fileIn.readLine();
 			}
@@ -59,7 +75,5 @@ class UDPServer {
 			serverSocket.send(nullDatagram);
 			System.out.print("Sent");
 		}
-
 	}
-
 }

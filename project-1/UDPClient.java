@@ -1,68 +1,98 @@
-import java.io.*;
 import java.net.*;
 import java.util.*;
-import java.awt.*;
-/* This program is a UDP client that sends a message to a server.
-*/
+import java.text.MessageFormat;
+
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+
+// ----------------------------------------
+// UDP client that sends HTTP GET requests.
 
 class UDPClient {
 
 	public static void main(String args[]) throws Exception {
 
-		// Variable initializations
+		// -----------------------------------
+		// Open socket and initialize request.
+
+		System.out.println("Opening socket...");
 		DatagramSocket clientSocket = new DatagramSocket();
 		InetAddress serverIP = InetAddress.getByName("localhost");
-		int serverPort = 9090;
+		int serverPort = 9876;
 		String httpRequest = "GET TestFile.html HTTP/1.0";
+		System.out.println("DONE\n");
 
-		// Send packet to server
-		System.out.println("-------------------------Sending Data to Server-------------------------");
-		byte[] dataOut = httpRequest.getBytes();
-		DatagramPacket packetOut = new DatagramPacket(
-				dataOut, dataOut.length, serverIP, serverPort);
-		clientSocket.send(packetOut);
-		System.out.println("Complete");
+		// ---------------------------
+		// Send GET request to server.
 
-		// Receive packet from server
-		System.out.println("-----------------------Receiving Data from Server-----------------------");
-		byte[] dataIn = new byte[256];
-		DatagramPacket packetIn = new DatagramPacket(dataIn, dataIn.length);
+		System.out.println("Sending request to server...");
+		byte[] sendData = httpRequest.getBytes();
+		DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, serverIP, serverPort);
+		clientSocket.send(sendPacket);
+		System.out.println("DONE\n");
 
-		ArrayList<UDPPacket> received = new ArrayList<>();
-		boolean finished = false;
+		// ----------------------------
+		// Receive packets from server.
+
+		System.out.println("Receiving response from server...");
+		byte[] receiveData = new byte[1024];
+		DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
+
 		int packetNum = 0;
+		boolean isFinished = false;
+		ArrayList<UDPPacket> receivedPacketList = new ArrayList<>();
 
-		while (!finished) {
-			clientSocket.receive(packetIn);
-			UDPPacket dataReceived = UDPPacket.makePacket(packetIn);
+		while (!isFinished)
+		{
+			clientSocket.receive(receivePacket);
+			UDPPacket dataReceived = UDPPacket.makePacket(receivePacket);
 			packetNum++;
-			if (dataReceived.getPacketData()[0] == '\0') {
-				finished = true;
-			} else {
-				received.add(dataReceived);
-				System.out.println("Received packetNum: " + packetNum);
+
+			if (dataReceived.getPacketData()[0] == '\0')
+			{
+				isFinished = true;
+			}
+			else
+			{
+				receivedPacketList.add(dataReceived);
+				System.out.println("Received Packet : " + packetNum);
 			}
 		}
+		System.out.println("DONE\n");
 
 		clientSocket.close();
 
-		System.out.println("------------------------Running Gremlin Function------------------------");
-		String gremlinProb = "0.0";
-		if (args.length != 0) {
-			gremlinProb = args[0];
+		// -----------------------------
+		// Artificially corrupt packets.
+
+		System.out.print("Running Gremlin Function...");
+		String errorProbability = "0.0";
+		if (args.length > 0) {
+			errorProbability = args[0];
+			System.out.println(MessageFormat.format(" Error probability : {0}.", errorProbability));
 		} else {
-			System.out.println("There were no command line argumants for gremlin function");
+			System.out.println(" No error probability value was supplied. Defaulting to 0.");
 		}
 
-		for (UDPPacket packet : received) {
-			gremlin(gremlinProb, packet);
+		for (UDPPacket packet : receivedPacketList) {
+			gremlin(errorProbability, packet);
 		}
+		System.out.println("DONE\n");
 
-		errorDetection(received);
+		// ------------------------------------
+		// Run error detection and re-assembly.
 
-		byte[] reassembledFile = UDPPacket.reassemble(received);
+		System.out.println("Checking for errors...");
+		errorDetection(receivedPacketList);
+		System.out.println("DONE\n");
+
+		System.out.println("Re-assembling packets...");
+		byte[] reassembledFile = UDPPacket.reassemble(receivedPacketList);
 		String reassembledFileString = new String(reassembledFile);
-		System.out.println("\nfile recieved from server:\n" + reassembledFileString);
+		System.out.println("DONE\n");
+
+		Document doc = Jsoup.parse(reassembledFileString);
+		System.out.println(MessageFormat.format("File received from server: \n{0}", doc.toString()));
 	}
 
 	private static void errorDetection(ArrayList<UDPPacket> packetList) {
