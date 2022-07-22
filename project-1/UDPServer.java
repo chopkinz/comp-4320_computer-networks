@@ -1,3 +1,9 @@
+// ----------------------------------------------
+// Matthew Bentz, Chase Hopkins, James Haberstroh
+
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+
 import java.io.*;
 import java.net.*;
 import java.util.*;
@@ -69,16 +75,25 @@ class UDPServer {
 			// ------------------------------------
 			// Sequentially send packets to client.
 
-			System.out.print("Sending packets");
+			System.out.println("Sending packets...");
 			for (UDPPacket packet : packetList) {
 				DatagramPacket sendPacket = packet.getDatagramPacket(clientIP, clientPort);
 				serverSocket.send(sendPacket);
-				System.out.print(".");
 			}
 
 			ArrayList<UDPPacket> nullPacket = UDPPacket.segment(nullByte.getBytes());
 			DatagramPacket nullDatagram = nullPacket.get(0).getDatagramPacket(clientIP, clientPort);
 			serverSocket.send(nullDatagram);
+
+			// -------------------------------------------
+			// Print out list of packets sent from server.
+
+			packetList.add(nullPacket.get(0));
+			byte[] reassembledFile = UDPPacket.reassemble(packetList);
+			String reassembledFileString = new String(reassembledFile);
+
+			Document doc = Jsoup.parse(reassembledFileString);
+			System.out.println(MessageFormat.format("File sent from server: \n{0}", doc.toString()));
 
 			System.out.println("\nDONE\n");
 		}

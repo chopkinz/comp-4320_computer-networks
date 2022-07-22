@@ -1,3 +1,6 @@
+// ----------------------------------------------
+// Matthew Bentz, Chase Hopkins, James Haberstroh
+
 "C:\Program Files\Java\jdk-17.0.1\bin\java.exe" "-javaagent:C:\Program Files\JetBrains\IntelliJ IDEA Community Edition 2022.1.4\lib\idea_rt.jar=64733:C:\Program Files\JetBrains\IntelliJ IDEA Community Edition 2022.1.4\bin" -Dfile.encoding=UTF-8 -classpath "C:\Users\Matthew Bentz\Desktop\COMP4320\Project1\comp-4320_computer-networks\out\production\comp-4320_computer-networks;C:\Users\Matthew Bentz\Desktop\COMP4320\Project1\comp-4320_computer-networks\jsoup-1.15.2.jar" UDPClient 0.20
 Opening socket...
 DONE
