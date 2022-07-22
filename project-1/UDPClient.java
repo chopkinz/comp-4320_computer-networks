@@ -10,6 +10,9 @@ import org.jsoup.nodes.Document;
 
 class UDPClient {
 
+	private static int serverPort = 9876;
+	private static String serverName = "localhost";
+
 	public static void main(String args[]) throws Exception {
 
 		// -----------------------------------
@@ -17,8 +20,6 @@ class UDPClient {
 
 		System.out.println("Opening socket...");
 		DatagramSocket clientSocket = new DatagramSocket();
-		InetAddress serverIP = InetAddress.getByName("localhost");
-		int serverPort = 9876;
 		String httpRequest = "GET TestFile.html HTTP/1.0";
 		System.out.println("DONE\n");
 
@@ -27,7 +28,7 @@ class UDPClient {
 
 		System.out.println("Sending request to server...");
 		byte[] sendData = httpRequest.getBytes();
-		DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, serverIP, serverPort);
+		DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, InetAddress.getByName(serverName), serverPort);
 		clientSocket.send(sendPacket);
 		System.out.println("DONE\n");
 
@@ -35,7 +36,7 @@ class UDPClient {
 		// Receive packets from server.
 
 		System.out.println("Receiving response from server...");
-		byte[] receiveData = new byte[1024];
+		byte[] receiveData = new byte[UDPPacket.PACKET_SIZE];
 		DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
 
 		int packetNum = 0;

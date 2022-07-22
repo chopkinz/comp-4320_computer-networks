@@ -4,15 +4,15 @@ import java.util.*;
 
 /*
  * Includes methods to create packets, getting packet data, getting and setting the packet header,
- * getting and setting the packet segmant number, segmentation, re-assembly, and the checksum
- * funtion.
+ * getting and setting the packet segment number, segmentation, re-assembly, and the checksum
+ * function.
 */
 
 public class UDPPacket {
 	private static String HEADER_CHECK_SUM = "CheckSum"; // key for check sum
 	private static String HEADER_SEGMENT_NUM = "SegmentNumber"; // key for segment number
 	private static final int HEADER_LINES = 4; // lines before data as stated in pdf
-	private static int PACKET_SIZE = 1024; // packet size allowed by the network as stated in pdf
+	public static int PACKET_SIZE = 1024; // packet size allowed by the network as stated in pdf
 	private static final int PACKET_DATA_SIZE = PACKET_SIZE - HEADER_LINES; // actual size of data
 	private Map<String, String> packetHeader; // map for packet header info
 	private byte[] packetData; // byte array for packet data
