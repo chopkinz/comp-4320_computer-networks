@@ -1,65 +1,86 @@
-
 import java.io.*;
 import java.net.*;
 import java.util.*;
+import java.text.MessageFormat;
+import java.util.stream.Collectors;
+
+// ---------------------------------------
+// Server that receives HTTP GET requests.
 
 class UDPServer {
+
+	private static int socketPort = 9876;
+	private static String nullByte = "\0";
+
 	public static void main(String args[]) throws Exception {
 
-		// Create socket at port 9090
-		DatagramSocket serverSocket = new DatagramSocket(9090);
+		// -------------------------
+		// Open socket at port 9876.
 
-		// Create byte arrays
-		byte[] dataIn = new byte[256];
-		String nullByte = "\0";
+		System.out.println("Opening socket...");
+		DatagramSocket serverSocket = new DatagramSocket(socketPort);
+		byte[] receiveData = new byte[UDPPacket.PACKET_SIZE];
+		System.out.println("DONE\n");
 
-		while (true) {
+		// ------------------------------
+		// Continuously process requests.
 
-			// Get packet sent from client
-			DatagramPacket packetIn = new DatagramPacket(dataIn, dataIn.length);
-			serverSocket.receive(packetIn);
+		while (true)
+		{
+			// ------------------------------
+			// Receive packet sent by client.
 
-			// Get client IP address, port number, and HTTP request
-			InetAddress clientIP = packetIn.getAddress();
-			int clientPort = packetIn.getPort();
-			String clientGetRequest = new String(packetIn.getData());
+			DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
+			serverSocket.receive(receivePacket);
 
-			// Get the name of the file requested by the client
-			String fileName = clientGetRequest.substring(
-					clientGetRequest.indexOf(" ") + 1, clientGetRequest.lastIndexOf(" "));
-			BufferedReader fileIn = new BufferedReader(new FileReader(fileName));
-			StringBuilder fileDataContents = new StringBuilder();
+			// ------------------------------------------------------
+			// Get clients IP address, port number, and request data.
 
-			String line = fileIn.readLine();
-			System.out.println("line: " + line);
-			while (line != null) {
-				System.out.println(line);
-				fileDataContents.append(line);
-				line = fileIn.readLine();
-			}
-			fileIn.close();
+			InetAddress clientIP = receivePacket.getAddress();
+			int clientPort = receivePacket.getPort();
+			String requestData = new String(receivePacket.getData());
+			System.out.println(MessageFormat.format("Packet received from client at {0}", clientIP));
 
-			String httpHeader = "HTTP/1.0 TestFile.html Follows\r\n"
+			// ---------------------------------------
+			// Extract file name and read into buffer.
+
+			String fileName = requestData.split(" ")[1];
+			System.out.println(MessageFormat.format("File requested : {0}\n", fileName));
+
+			System.out.println("Reading file...");
+			BufferedReader fileBuffer = new BufferedReader(new FileReader(fileName));
+			String fileDataString = fileBuffer.lines().collect(Collectors.joining());
+			fileBuffer.close();
+			System.out.println("DONE\n");
+
+			String response = "HTTP/1.0 200 TestFile.html Follows\r\n"
 					+ "Content-Type: text/plain\r\n"
-					+ "Content-Length: " + fileDataContents.length() + "\r\n"
-					+ "\r\n" + fileDataContents;
+					+ "Content-Length: " + fileDataString.length() + "\r\n"
+					+ "\r\n"
+					+ fileDataString;
 
-			ArrayList<UDPPacket> packetList = UDPPacket.segment(httpHeader.getBytes()); // segments file into packets
-			System.out.println("List of segmented packets is " + packetList.size() + " packets long");
+			// --------------------------
+			// Segment file into packets.
 
+			System.out.print("Segmenting response... ");
+			ArrayList<UDPPacket> packetList = UDPPacket.segment(response.getBytes());
+			System.out.print(packetList.size() + " packets created.\nDONE\n\n");
+
+			// ------------------------------------
+			// Sequentially send packets to client.
+
+			System.out.print("Sending packets");
 			for (UDPPacket packet : packetList) {
 				DatagramPacket sendPacket = packet.getDatagramPacket(clientIP, clientPort);
 				serverSocket.send(sendPacket);
+				System.out.print(".");
 			}
 
-			// Notify the client that all data has been sent via a null character
-			System.out.println("Sending null character");
 			ArrayList<UDPPacket> nullPacket = UDPPacket.segment(nullByte.getBytes());
 			DatagramPacket nullDatagram = nullPacket.get(0).getDatagramPacket(clientIP, clientPort);
 			serverSocket.send(nullDatagram);
-			System.out.print("Sent");
+
+			System.out.println("\nDONE\n");
 		}
-
 	}
-
 }
