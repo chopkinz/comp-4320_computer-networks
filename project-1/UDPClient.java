@@ -4,7 +4,7 @@ import java.text.MessageFormat;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-
+//
 // ----------------------------------------
 // UDP client that sends HTTP GET requests.
 
@@ -98,10 +98,11 @@ class UDPClient {
 
 	private static void errorDetection(ArrayList<UDPPacket> packetList) {
 		for (UDPPacket packet : packetList) {
-			String checksumHeaderValue = packet.getHeaderValue(UDPPacket.HEADER_VALUES.CHECKSUM);
-			Short checkSum = Short.parseShort(checksumHeaderValue);
-			byte[] data = packet.getPacketData();
-			short calculatedCheckSum = UDPPacket.calculateChecksum(data);
+			String sumHeaderValue = packet.getHeaderValue(UDPPacket.HEADER_VALUES.CHECKSUM);
+			Short checkSum = Short.parseShort(sumHeaderValue);
+			
+			byte[] packetData = packet.getPacketData();
+			short calculatedCheckSum = UDPPacket.calculateChecksum(packetData);
 			if (!checkSum.equals(calculatedCheckSum)) {
 				String segmentHeaderValue = packet.getHeaderValue(UDPPacket.HEADER_VALUES.SEGMENT_NUM);
 				System.out.println("Error detected in UDPPacket Number: " + segmentHeaderValue);
@@ -110,14 +111,14 @@ class UDPClient {
 	}
 
 	private static void gremlin(String probability, UDPPacket packet) {
-		Random rand = new Random();
-		double damageProb = rand.nextDouble();
-		double flipProb = rand.nextDouble();
+		Random random = new Random();
+		double damageProb = random.nextDouble();
+		double bytesProb = random.nextDouble();
 		int bytesToChange;
 
-		if (flipProb <= 0.5) {
+		if (bytesProb <= 0.5) {
 			bytesToChange = 1;
-		} else if (flipProb <= 0.8) {
+		} else if (bytesProb <= 0.8) {
 			bytesToChange = 2;
 		} else {
 			bytesToChange = 3;
@@ -125,9 +126,9 @@ class UDPClient {
 
 		if (Double.parseDouble(probability) >= damageProb) {
 			for (int i = 0; i < bytesToChange; i++) {
-				byte[] data = packet.getPacketData();
+				byte[] packetData = packet.getPacketData();
 				int byteNum = rand.nextInt(packet.getPacketSize());
-				data[byteNum] = (byte) ~data[byteNum];
+				packetData[byteNum] = (byte) ~packetData[byteNum];
 			}
 		}
 	}
