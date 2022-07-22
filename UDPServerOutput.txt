@@ -1,0 +1,15 @@
+"C:\Program Files\Java\jdk-17.0.1\bin\java.exe" "-javaagent:C:\Program Files\JetBrains\IntelliJ IDEA Community Edition 2022.1.4\lib\idea_rt.jar=64650:C:\Program Files\JetBrains\IntelliJ IDEA Community Edition 2022.1.4\bin" -Dfile.encoding=UTF-8 -classpath "C:\Users\Matthew Bentz\Desktop\COMP4320\Project1\comp-4320_computer-networks\out\production\comp-4320_computer-networks;C:\Users\Matthew Bentz\Desktop\COMP4320\Project1\comp-4320_computer-networks\jsoup-1.15.2.jar" UDPServer
+Opening socket...
+DONE
+
+Packet received from client at /192.168.56.1
+File requested : TestFile.html
+
+Reading file...
+DONE
+
+Segmenting response... 63 packets created.
+DONE
+
+Sending packets...............................................................
+DONE

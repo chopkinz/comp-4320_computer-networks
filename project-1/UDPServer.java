@@ -76,9 +76,6 @@ class UDPServer {
 				System.out.print(".");
 			}
 
-			//serverSocket.send(new DatagramPacket(nullByte.getBytes(), nullByte.getBytes().length, clientIP, clientPort));
-			//serverSocket.send(new UDPPacket().getDatagramPacket(clientIP, clientPort));
-
 			ArrayList<UDPPacket> nullPacket = UDPPacket.segment(nullByte.getBytes());
 			DatagramPacket nullDatagram = nullPacket.get(0).getDatagramPacket(clientIP, clientPort);
 			serverSocket.send(nullDatagram);
