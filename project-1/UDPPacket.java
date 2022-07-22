@@ -10,8 +10,8 @@ public class UDPPacket {
 	public static int PACKET_SIZE = 1024;
 	private Map<String, String> packetHeader;
 	private static final int HEADER_LINES = 4;
-	private static String HEADER_CHECK_SUM = "HeaderCheckSum";
-	private static String HEADER_SEGMENT_NUM = "HeaderSegmentNum";
+	private static final String HEADER_CHECK_SUM = "HeaderCheckSum";
+	private static final String HEADER_SEQUENCE_NUM = "HeaderSequence";
 	private static final int PACKET_DATA_SIZE = PACKET_SIZE - HEADER_LINES;
 	public enum HEADER_VALUES {
 		SEGMENT_NUM,
@@ -158,7 +158,7 @@ public class UDPPacket {
 	String getHeaderValue(HEADER_VALUES headerValue) {
 		switch (headerValue) {
 			case SEGMENT_NUM:
-				return packetHeader.get(HEADER_SEGMENT_NUM);
+				return packetHeader.get(HEADER_SEQUENCE_NUM);
 			case CHECKSUM:
 				return packetHeader.get(HEADER_CHECK_SUM);
 			default:
@@ -169,7 +169,7 @@ public class UDPPacket {
 	private void setHeaderValue(HEADER_VALUES headerValue, String value) {
 		switch (headerValue) {
 			case SEGMENT_NUM:
-				packetHeader.put(HEADER_SEGMENT_NUM, value);
+				packetHeader.put(HEADER_SEQUENCE_NUM, value);
 				break;
 			case CHECKSUM:
 				packetHeader.put(HEADER_CHECK_SUM, value);
@@ -196,7 +196,7 @@ public class UDPPacket {
 
 	DatagramPacket getDatagramPacket(InetAddress ip, int port) {
 		byte[] setData = ByteBuffer.allocate(PACKET_SIZE)
-				.putShort(Short.parseShort(packetHeader.get(HEADER_SEGMENT_NUM)))
+				.putShort(Short.parseShort(packetHeader.get(HEADER_SEQUENCE_NUM)))
 				.putShort(Short.parseShort(packetHeader.get(HEADER_CHECK_SUM)))
 				.put(packetData)
 				.array();
