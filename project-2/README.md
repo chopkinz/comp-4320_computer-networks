@@ -1,4 +1,4 @@
-# Client - Compiling & run
+# Client - Compile & run
 
     1. Create directory client_out
     2. execute ```javac -d client_out client/*.java```
