@@ -16,7 +16,6 @@ class UDPServer {
 
 		// -------------------------
 		// Open socket at port 9876.
-
 		System.out.println("Opening socket...");
 		DatagramSocket serverSocket = new DatagramSocket(socketPort);
 		byte[] receiveData = new byte[UDPPacket.PACKET_SIZE];

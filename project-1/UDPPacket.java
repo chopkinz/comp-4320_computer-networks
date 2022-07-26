@@ -7,7 +7,6 @@ import java.util.*;
  * getting and setting the packet segment number, segmentation, re-assembly, and the checksum
  * function.
 */
-
 public class UDPPacket {
 	private static String HEADER_CHECK_SUM = "CheckSum"; // key for check sum
 	private static String HEADER_SEGMENT_NUM = "SegmentNumber"; // key for segment number
