@@ -1,0 +1,81 @@
+Enter server IPAdress to connect to.
+localhost
+Enter your gremlin probability for packet corruption: 
+0
+Enter your gremlin probability for packet loss (corruption prob + loss prob) should be less than one: 
+0.2
+Enter an HTTP GET request.
+get testFile.html HTTP/1.0
+
+HTTP/1.0 200 - Document follows
+Content-Type: text/plain
+Content-Length: 2093 bytes
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+        <h1>
+      Africa - <a href="https://genius.com/Toto-africa-lyrics">Toto</a>
+        </h1>
+      </head>
+      
+      <body>
+          [Verse 1: David Paich]
+      I hear the drums echoing tonight
+      But she hears only whispers of some quiet conversation
+      She's coming in, 12:30 flight
+      Her moonlit wings reflect the stars that guide me towards salvation
+      I stopped an old man along the way
+      Hoping to find some old forgotten words or ancient melodies
+      He turned to me as if to say
+      "Hurry, boy, it's waiting there for you"
+      <br>
+      <br>
+      [Chorus: Bobby Kimball]
+      It's gonna take the lot to drag me away from you
+      There's nothing that a hundred men or more could ever do
+      I bless the rains down in Africa
+      Gonna take some time to do the things we never had
+      <br>
+      <br>
+      [Verse 2: David Paich]
+      The wild dogs cry out in the night
+      As they grow restless longing for some solitary company
+      I know that I must do what's right
+      As sure as Kilimanjaro rises like Olympus above the Serengeti
+      I seek to cure what's deep inside
+      Frightened of this thing that I've become
+      <br>
+      <br>
+      [Chorus: Bobby Kimball]
+      It's gonna take the lot to drag me away from you
+      There's nothing that a hundred men or more could ever do
+      I bless the rains down in Africa
+      Gonna take some time to do the things we never had
+      <br>
+      <br>
+      [Bridge]
+      Hurry, boy, she's waiting there for you
+      <br>
+      <br>
+      [Chorus: Bobby Kimball]
+      It's gonna take the lot to drag me away from you
+      There's nothing that a hundred men or more could ever do
+      I bless the rains down in Africa
+      I bless the rains down in Africa
+      I bless the rains down in Africa
+      I bless the rains down in Africa
+      I bless the rains down in Africa
+      Gonna take some time to do the things we never had
+      
+      </body>
+</html>
+-----------------------------------
+Packet Transmission Report
+-----------------------------------
+No packets were corrupted
+-----------------------------------
+No packets were lost
+-----------------------------------
+sequence numbers received: [0, 1, 2]
